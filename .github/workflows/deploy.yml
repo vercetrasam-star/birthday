@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Builds birthday.html with your config injected, then publishes dist/.
+#
+# ONE-TIME SETUP
+#   1. Repo → Settings → Pages → Source: "GitHub Actions"
+#   2. Repo → Settings → Secrets and variables → Actions → New secret
+#        FORMSUBMIT_EMAIL   your email
+#        WHATSAPP           919876543210   (optional fallback)
+#
+#   Secrets stay out of the repo — but note that GitHub Pages has no
+#   server, so build.js bakes them into the published HTML. They are
+#   readable by anyone who views source on the live page. If you want
+#   them genuinely hidden, deploy to Vercel instead (api/send.js keeps
+#   everything server-side).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # lets you re-run it by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build dist/index.html
+        env:
+          USER_NAME:        ${{ secrets.USER_NAME }}
+          FROM_NAME:        ${{ secrets.FROM_NAME }}
+          BIRTH_DATE:       ${{ secrets.BIRTH_DATE }}
+          FORMSUBMIT_EMAIL: ${{ secrets.FORMSUBMIT_EMAIL }}
+          WHATSAPP:         ${{ secrets.WHATSAPP }}
+          EMAIL:            ${{ secrets.EMAIL }}
+        run: node build.js
+
+      - name: Confirm something was built
+        run: test -s dist/index.html && echo "dist/index.html OK"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
