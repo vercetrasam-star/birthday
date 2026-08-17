@@ -1,0 +1,14 @@
+{
+  "name": "priti-birthday",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A birthday microsite for Priti — 11 chapters, and her reply comes back to you.",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "build": "node build.js",
+    "check:telegram": "node telegram-check.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

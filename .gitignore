@@ -1,0 +1,19 @@
+# ── secrets ─────────────────────────────────────────────
+# never commit these: bot token, chat id, phone number, email
+.env
+.env.local
+.env.*.local
+
+# ── build output ────────────────────────────────────────
+# dist/index.html has the config BAKED IN. If you are using a
+# direct bot token (no proxy), that file contains your secret —
+# keep it out of git and deploy it with a CLI or drag-and-drop.
+dist/
+
+# ── misc ────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
